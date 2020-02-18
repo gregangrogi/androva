@@ -31,9 +31,10 @@ class meu ():
     def render (self):
         if self.stage == 0:
             sc.blit(self.sprite[0],  (0, 0))
+            pygame.draw.rect(sc, (173, 199, 195), (510, 300, 220, 40))
 
         #if
-            pygame.display.update()
+
 
 #изображеня==================================================
 
@@ -63,3 +64,5 @@ while keep_going:
             moused = False
 
     mian_menu.render()
+    sc.blit(text("новая игра", 50, (255,255,255)), (525, 300))
+    pygame.display.update()
