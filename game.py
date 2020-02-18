@@ -12,7 +12,7 @@ def text (tex, rad, color):
     text_rect = text.get_rect().centerx
     return text
 
-sc = pygame.display.set_mode ([1280,720])
+sc = pygame.display.set_mode ([1920,1080], pygame.FULLSCREEN)
 
 sc.blit(text("загрузка", 150, (255,255,255)), (300, 300))
 pygame.display.update()
@@ -24,14 +24,33 @@ class meu ():
         self.stage = 0
         self.images = images
         self.sprite = []
+        self.colors= [(173, 199, 195), (139, 156, 158)]
 
     def imp(self):
         for x in range (0, len(self.images)):
             self.sprite.append(pygame.image.load(self.images[x]))
-    def render (self):
+    def render (self, moused):
         if self.stage == 0:
             sc.blit(self.sprite[0],  (0, 0))
-            pygame.draw.rect(sc, (173, 199, 195), (510, 300, 220, 40))
+            pygame.draw.rect(sc, self.colors[0], (860, 500, 220, 40))
+            pygame.draw.rect(sc, self.colors[0], (860, 550, 220, 40))
+            pygame.draw.rect(sc, self.colors[0], (860, 600, 220, 40))
+            sc.blit(text("новая игра", 50, (255,255,255)), (875, 500))
+            sc.blit(text("настройки", 50, (255,255,255)), (880, 550))
+            sc.blit(text("выйти", 50, (255,255,255)), (910, 600))
+            if pygame.mouse.get_pos()[0] > 860 and pygame.mouse.get_pos()[0] <1080:
+                if pygame.mouse.get_pos()[1]>500 and pygame.mouse.get_pos()[1] <540 and moused:
+                    self.stage = 1
+                if pygame.mouse.get_pos()[1]>550 and pygame.mouse.get_pos()[1] <590 and moused:
+                    self.stage = 2
+                    print('египетсая сила')
+        if self.stage == 2:
+            sc.blit(self.sprite[0],  (0, 0))
+            pygame.draw.rect(sc, self.colors[1], (400, 200, 1120, 680))
+            sc.blit(text("настройки", 70, (255,255,255)), (850, 250))
+
+
+
 
         #if
 
@@ -63,6 +82,6 @@ while keep_going:
         if event.type == pygame.MOUSEBUTTONUP:
             moused = False
 
-    mian_menu.render()
-    sc.blit(text("новая игра", 50, (255,255,255)), (525, 300))
+    mian_menu.render(moused)
+
     pygame.display.update()
