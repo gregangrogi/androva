@@ -43,11 +43,22 @@ class meu ():
                     self.stage = 1
                 if pygame.mouse.get_pos()[1]>550 and pygame.mouse.get_pos()[1] <590 and moused:
                     self.stage = 2
-                    print('египетсая сила')
+                if pygame.mouse.get_pos()[1]>600 and pygame.mouse.get_pos()[1] <640 and moused:
+                    self.stage = 3
+
+
         if self.stage == 2:
             sc.blit(self.sprite[0],  (0, 0))
             pygame.draw.rect(sc, self.colors[1], (400, 200, 1120, 680))
             sc.blit(text("настройки", 70, (255,255,255)), (850, 250))
+            sc.blit(text("выйти", 40, (255,255,255)), (1250, 260))
+            if pygame.mouse.get_pos()[0] > 1250 and pygame.mouse.get_pos()[0] <1350:
+                if pygame.mouse.get_pos()[1]>260 and pygame.mouse.get_pos()[1] <310 and moused:
+                    self.stage = 0
+
+        if self.stage == 3:
+            pygame.quit()
+
 
 
 
