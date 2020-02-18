@@ -25,14 +25,17 @@ class meu ():
         self.images = images
         self.sprite = []
         self.colors= [(173, 199, 195), (139, 156, 158), (222, 184, 126)]
+
     def tooch(self, x, y, x1, y1):
         if pygame.mouse.get_pos()[0] > x and pygame.mouse.get_pos()[0] < x1 and pygame.mouse.get_pos()[1]>y and pygame.mouse.get_pos()[1] < y1 :
             return True
         else:
             return False
+
     def imp(self):
         for x in range (0, len(self.images)):
             self.sprite.append(pygame.image.load(self.images[x]))
+
     def render (self, moused):
         if self.stage == 0:
             sc.blit(self.sprite[0],  (0, 0))
@@ -63,20 +66,25 @@ class meu ():
 
         if self.stage == 1:
             pygame.draw.rect(sc, self.colors[1], (0, 0, 1920, 1080))
+            sc.blit(text("выбор персонажа", 70, (255,255,255)), (750, 250))
             if self.tooch(650, 300, 850, 700):
                 pygame.draw.rect(sc, self.colors[2], (650, 300, 200, 400))
+                sc.blit(text("антон", 70, (255,255,255)), (880, 710))
+                sc.blit(text("занимаеться радиотехникой. может создовать особые предметы", 40, (255,255,255)), (480, 765))
             else:
                 pygame.draw.rect(sc, self.colors[0], (650, 300, 200, 400))
             if self.tooch(1050, 300, 1250, 700):
                 pygame.draw.rect(sc, self.colors[2], (1050, 300, 200, 400))
+                sc.blit(text("наста", 70, (255,255,255)), (880, 710))
+                sc.blit(text("атлетка. быстр бегает", 40, (255,255,255)), (800, 765))
             else:
                 pygame.draw.rect(sc, self.colors[0], (1050, 300, 200, 400))
             sc.blit(self.sprite[1],  (650, 300))
+            sc.blit(self.sprite[2],  (1050, 300))
 
 #изображеня==================================================
 
-bg = [(".\\bg\\MENU BG.png"), (".\\obj\\abr\\adr-choose.png")]
-
+bg = [(".\\bg\\MENU BG.png"), (".\\obj\\abr\\adr-choose.png"), (".\\obj\\nst\\nst-choose.png")]
 
 #переменные==================================================
 
@@ -88,7 +96,6 @@ keep_going = True
 
 mian_menu = meu(bg)
 mian_menu.imp()
-
 
 #ГЛАВНЫЙ ЦИКЛ================================================
 
