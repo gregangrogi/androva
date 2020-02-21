@@ -98,7 +98,7 @@ class object ():
     def render (self):
         for x in range (0, self.pos[4]):
             for y in range (0, self.pos[5]):
-                sc.blit(self.sprite,  (self.pos[0]+(self.pos[2]*x+self.cam_move[0]), self.pos[1]+(self.pos[3]*y)+self.cam_move[0]))
+                sc.blit(self.sprite,  (self.pos[0]+(self.pos[2]*x)+self.cam_move[0], self.pos[1]+(self.pos[3]*y)+self.cam_move[1]))
 class square (): #просто вспомогательный класс
     def __init__ (self, x, y, xx, yy ,color):
         self.pos = (x, y, xx, yy)
@@ -113,12 +113,14 @@ class square (): #просто вспомогательный класс
 class player ():
     def __init__(self, x, y, xx, yy, sprite):
         self.pos = [x, y, xx, yy]
+        self.forcam = 0
         self.images = sprite
         self.anim_co = 0
         self.sanim = 1
         self.sprite = []
         self.forward = 1
         self.grav = 0
+        self.cam_move = [0, 0]
     def imp(self):
         for x in range (0, len(self.images)):
             self.sprite.append(pygame.image.load(self.images[x]))
@@ -130,32 +132,38 @@ class player ():
             self.anim_co = 0
 
         if self.sanim == 0:
-            self.grav+=0.2
+            self.grav+=0.3
             self.keys = pygame.key.get_pressed()
-            if self.keys [pygame.K_d]:
+            if self.keys [pygame.K_a]:
                 self.pos[0] += 3
+                self.forcam = 3
                 self.forward=0
-                sc.blit(self.sprite[2],  (self.pos[0], self.pos[1]))
-            elif self.keys [pygame.K_a]:
+                sc.blit(self.sprite[3],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
+            elif self.keys [pygame.K_d]:
                 self.pos[0] += -3
-                sc.blit(self.sprite[3],  (self.pos[0], self.pos[1]))
+                self.forcam = -3
+                sc.blit(self.sprite[2],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
             else:
+                self.forcam = 0
                 if self.forward:
-                    sc.blit(self.sprite[1],  (self.pos[0], self.pos[1]))
+                    sc.blit(self.sprite[1],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
                 else:
-                    sc.blit(self.sprite[2],  (self.pos[0], self.pos[1]))
+                    sc.blit(self.sprite[2],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
             if falling:
                 self.grav = 0
 
             self.pos[1] += self.grav
 
             if self.keys [pygame.K_SPACE]:
-                self.pos[1] -=10
+                self.pos[1] -=13
         elif self.sanim == 1:
-            sc.blit(self.sprite[0],  (self.pos[0], self.pos[1]))
+            sc.blit(self.sprite[0],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
 
     def ch_an (self):
         return self.sanim
+    def cam (self, x, y):
+        self.cam_move [0] += x
+        self.cam_move [1] += y
 
 class dialogue ():
     def __init__(self, text):
@@ -234,6 +242,8 @@ timerr1 = trimer(2)
 timerr2 = trimer(1)
 down = hitbox(850, 650, 113, 100)
 S_fall = False
+ocam = 0
+ncam = 850
 
     #1 комната================================================
 window1 = object(650, 400, 100, 150, 1, 1, furniture[3])
@@ -269,6 +279,9 @@ while keep_going:
 
     keys = pygame.key.get_pressed()
 
+    ocam = ncam
+    ncam = playerr.pos[0]
+
     if not mian_menu.ch_start() == 4:
         mian_menu.render(moused)
     else:
@@ -276,6 +289,10 @@ while keep_going:
         for g in range(0, len(rooms[0])):
             rooms[0][g].render()
         playerr.render(p_mode, S_fall)
+
+        for g in range(0, len(rooms[0])):
+            rooms[0][g].cam(playerr.forcam, 0)
+        playerr.cam(-(playerr.forcam), 0)
 
         down.move(playerr.pos[0], playerr.pos[1]+200)
 
