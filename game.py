@@ -1,6 +1,7 @@
 #запуск пуп гейма=========================================
 
 import pygame
+import random
 pygame.init()
 
 #загрузка==================================================
@@ -19,7 +20,7 @@ pygame.display.update()
 
 #классы====================================================
 
-class meu ():
+class meu (): #класс назван meu потому что кагда я писал menu он выдавал ошибку
     def __init__ (self, images):
         self.stage = 0
         self.images = images
@@ -81,21 +82,179 @@ class meu ():
                 pygame.draw.rect(sc, self.colors[0], (1050, 300, 200, 400))
             sc.blit(self.sprite[1],  (650, 300))
             sc.blit(self.sprite[2],  (1050, 300))
+            if self.tooch(650, 300, 850, 700) and moused:
+                self.stage = 4
+    def ch_start (self):
+            return self.stage
+
+class object ():
+    def __init__(self, x, y, xw, yw, xr , yr, sprite):
+        self.pos = [x, y, xw, yw, xr , yr]
+        self.sprite = pygame.image.load(sprite)
+        self.cam_move = [0, 0]
+    def cam (self, xm, ym):
+        self.cam_move[0] += xm
+        self.cam_move[1] += ym
+    def render (self):
+        for x in range (0, self.pos[4]):
+            for y in range (0, self.pos[5]):
+                sc.blit(self.sprite,  (self.pos[0]+(self.pos[2]*x+self.cam_move[0]), self.pos[1]+(self.pos[3]*y)+self.cam_move[0]))
+class square (): #просто вспомогательный класс
+    def __init__ (self, x, y, xx, yy ,color):
+        self.pos = (x, y, xx, yy)
+        self.color = color
+        self.cam_move = [0, 0]
+    def cam (self, xm, ym):
+        self.cam_move[0] += xm
+        self.cam_move[1] += ym
+    def render(self):
+        pygame.draw.rect(sc, self.color, (self.pos[0]+self.cam_move[0],self.pos[1]+self.cam_move[1], self.pos[2], self.pos[3]))
+
+class player ():
+    def __init__(self, x, y, xx, yy, sprite):
+        self.pos = [x, y, xx, yy]
+        self.images = sprite
+        self.anim_co = 0
+        self.sanim = 1
+        self.sprite = []
+        self.forward = 1
+        self.grav = 0
+    def imp(self):
+        for x in range (0, len(self.images)):
+            self.sprite.append(pygame.image.load(self.images[x]))
+    def render (self,  mode, falling):
+        self.anim_co += 1
+        self.sanim = mode
+
+        if self.anim_co > 60:
+            self.anim_co = 0
+
+        if self.sanim == 0:
+            self.grav+=0.2
+            self.keys = pygame.key.get_pressed()
+            if self.keys [pygame.K_d]:
+                self.pos[0] += 3
+                self.forward=0
+                sc.blit(self.sprite[2],  (self.pos[0], self.pos[1]))
+            elif self.keys [pygame.K_a]:
+                self.pos[0] += -3
+                sc.blit(self.sprite[3],  (self.pos[0], self.pos[1]))
+            else:
+                if self.forward:
+                    sc.blit(self.sprite[1],  (self.pos[0], self.pos[1]))
+                else:
+                    sc.blit(self.sprite[2],  (self.pos[0], self.pos[1]))
+            if falling:
+                self.grav = 0
+
+            self.pos[1] += self.grav
+
+            if self.keys [pygame.K_SPACE]:
+                self.pos[1] -=10
+        elif self.sanim == 1:
+            sc.blit(self.sprite[0],  (self.pos[0], self.pos[1]))
+
+    def ch_an (self):
+        return self.sanim
+
+class dialogue ():
+    def __init__(self, text):
+        self.text = text
+    def render (self, text_count):
+        pygame.draw.rect(sc, (88, 90, 99), (0, 720, 1920, 400))
+        if len(self.text [text_count]) > 20:
+            for f in range (0, int(len(self.text [text_count]) / 80)):
+                sc.blit(text(self.text [text_count][80*f:80*(f+1)], 40, (255,255,255)), (230, 750+f*50))
+        else:
+            sc.blit(text(self.text [text_count], 40, (255,255,255)), (230, 750))
+
+class material (object):
+    def tooch(self, pos):
+        if  pos[1]>self.pos[1]+(self.pos[3]) or pos[0]+pos[2]<self.pos[0] or self.pos[1]>pos[1]+pos[3] or pos[0]>self.pos[0]+(self.pos[2]):
+            return True
+        else:
+            return False
+
+class inv_box ():#невидимая коробка
+    def __init__(self, x, y, xx, yy):
+        self.pos = [x, y, xx, yy]
+    def tooch(self, pos):
+        if  pos[1]>self.pos[1]+(self.pos[3]) or pos[0]+pos[2]<self.pos[0] or self.pos[1]>pos[1]+pos[3] or pos[0]>self.pos[0]+(self.pos[2]):
+            return True
+        else:
+            return False
+
+class trimer ():#при timer не работало
+    def __init__ (self, long):
+        self.count = long*60
+    def time (self):
+        if self.count>0:
+            self.count-=1
+        return self.count
+
+class hitbox ():
+    def __init__ (self, x, y ,xx, yy):
+        self.pos = [x, y, xx, yy]
+
+    def move (self ,x, y):
+        self.pos[0] = x
+        self.pos[1] = y
+
+    def position(self):
+        return self.pos
+
+
 
 #изображеня==================================================
 
 bg = [(".\\bg\\MENU BG.png"), (".\\obj\\abr\\adr-choose.png"), (".\\obj\\nst\\nst-choose.png")]
+furniture = [(".\\obj\\frnt\\chair home.png"), (".\\obj\\frnt\\tumb home.png"),
+(".\\obj\\frnt\\scaf home.png"), (".\\obj\\frnt\\window home.png")]
+abr = [(".\\obj\\abr\\adr-sit.png"), (".\\obj\\abr\\adr-front.png"), (".\\obj\\abr\\adr-right1.png"), (".\\obj\\abr\\adr-left1.png")]
 
 #переменные==================================================
 
 menu = True
 moused = False
 keep_going = True
+timer = pygame.time.Clock()
+g_mode = 2
+p_mode = 1
+textes = ["""что случилось ? """]
+dio = 0
 
  #объекты======================================================
 
 mian_menu = meu(bg)
 mian_menu.imp()
+playerr = player(850, 450, 113, 300, abr)
+playerr.imp()
+win = dialogue(textes)
+timerr1 = trimer(2)
+timerr2 = trimer(1)
+down = hitbox(850, 650, 113, 100)
+S_fall = False
+
+    #1 комната================================================
+window1 = object(650, 400, 100, 150, 1, 1, furniture[3])
+windowb1 = square(650, 400, 100, 150,(20, 20, 30))
+window2 = object(950, 400, 100, 150, 1, 1, furniture[3])
+windowb2 = square(950, 400, 100, 150,(20, 20, 30))
+chair1 = object(800, 550, 300, 150, 1, 1, furniture[0])
+scaf1 = object(1150, 320, 300, 150, 1, 1, furniture[2])
+tumb1 = object(690, 575, 300, 150, 1, 1, furniture[1])
+flor1 = square(0, 600, 1920, 980, (116, 124, 130))
+flor2 = square(0, 800, 1920, 980, (104, 112, 117))
+wall1 = square(0, 0, 1920, 600, (168, 167, 162))
+wall2 = square(0, 0, 1920, 200, (158, 157, 152))
+
+flor_box = inv_box(0, 750, 1920, 330)
+
+room1 = [flor1, flor2, wall1, wall2,
+windowb2, window2,
+windowb1, window1, scaf1, tumb1, chair1]
+
+rooms = [room1]
 
 #ГЛАВНЫЙ ЦИКЛ================================================
 
@@ -108,6 +267,33 @@ while keep_going:
         if event.type == pygame.MOUSEBUTTONUP:
             moused = False
 
-    mian_menu.render(moused)
+    keys = pygame.key.get_pressed()
+
+    if not mian_menu.ch_start() == 4:
+        mian_menu.render(moused)
+    else:
+        sc.fill((0, 0, 0))
+        for g in range(0, len(rooms[0])):
+            rooms[0][g].render()
+        playerr.render(p_mode, S_fall)
+
+        down.move(playerr.pos[0], playerr.pos[1]+200)
+
+        if flor_box.tooch(down.pos):
+            S_fall = False
+        else:
+            S_fall = True
+
+        if timerr1.time()==1:
+            dio = 1
+
+        if dio == 1:
+            win.render(0)
+            if keys[pygame.K_f]:
+                dio = 0
+
+        if p_mode >0 and keys[pygame.K_e]:
+            p_mode = 0
 
     pygame.display.update()
+    timer.tick(60)
