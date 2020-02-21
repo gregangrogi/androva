@@ -119,6 +119,7 @@ class player ():
         self.sanim = 1
         self.sprite = []
         self.forward = 1
+        self.post = 0
         self.grav = 0
         self.cam_move = [0, 0]
     def imp(self):
@@ -132,23 +133,25 @@ class player ():
             self.anim_co = 0
 
         if self.sanim == 0:
-            self.grav+=0.3
+            self.grav+=0.4
             self.keys = pygame.key.get_pressed()
             if self.keys [pygame.K_a]:
-                self.pos[0] += 3
-                self.forcam = 3
+                self.pos[0] += 4
+                self.forcam = 4
                 self.forward=0
+                self.post = 3
                 sc.blit(self.sprite[3],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
             elif self.keys [pygame.K_d]:
-                self.pos[0] += -3
-                self.forcam = -3
+                self.pos[0] += -4
+                self.forcam = -4
+                self.post = 2
                 sc.blit(self.sprite[2],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
             else:
                 self.forcam = 0
                 if self.forward:
                     sc.blit(self.sprite[1],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
                 else:
-                    sc.blit(self.sprite[2],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
+                    sc.blit(self.sprite[self.post],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
             if falling:
                 self.grav = 0
 
@@ -157,6 +160,7 @@ class player ():
             if self.keys [pygame.K_SPACE]:
                 self.pos[1] -=13
         elif self.sanim == 1:
+            self.forcam = 0
             sc.blit(self.sprite[0],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
 
     def ch_an (self):
@@ -195,10 +199,13 @@ class inv_box ():#невидимая коробка
 class trimer ():#при timer не работало
     def __init__ (self, long):
         self.count = long*60
+        self.start = long*60
     def time (self):
         if self.count>0:
             self.count-=1
         return self.count
+    def restart (self):
+        self.count = self.start
 
 class hitbox ():
     def __init__ (self, x, y ,xx, yy):
@@ -210,8 +217,6 @@ class hitbox ():
 
     def position(self):
         return self.pos
-
-
 
 #изображеня==================================================
 
@@ -238,8 +243,8 @@ mian_menu.imp()
 playerr = player(850, 450, 113, 300, abr)
 playerr.imp()
 win = dialogue(textes)
-timerr1 = trimer(2)
-timerr2 = trimer(1)
+timerr1 = trimer(0.1)#здесь должно быть 2 но для отладки сделал меньше
+sit = trimer(1)
 down = hitbox(850, 650, 113, 100)
 S_fall = False
 ocam = 0
@@ -253,12 +258,14 @@ windowb2 = square(950, 400, 100, 150,(20, 20, 30))
 chair1 = object(800, 550, 300, 150, 1, 1, furniture[0])
 scaf1 = object(1150, 320, 300, 150, 1, 1, furniture[2])
 tumb1 = object(690, 575, 300, 150, 1, 1, furniture[1])
-flor1 = square(0, 600, 1920, 980, (116, 124, 130))
-flor2 = square(0, 800, 1920, 980, (104, 112, 117))
-wall1 = square(0, 0, 1920, 600, (168, 167, 162))
-wall2 = square(0, 0, 1920, 200, (158, 157, 152))
+flor1 = square(-600, 600, 2320, 980, (116, 124, 130))
+flor2 = square(-600, 800, 2320, 980, (104, 112, 117))
+wall1 = square(200, 0, 1520, 600, (168, 167, 162))
+wall2 = square(200, 0, 1520, 200, (158, 157, 152))
 
-flor_box = inv_box(0, 750, 1920, 330)
+flor_box = inv_box(400, 750, 1920, 330)
+
+interactive_chair = inv_box(650, 550, 330, 150)
 
 room1 = [flor1, flor2, wall1, wall2,
 windowb2, window2,
@@ -282,6 +289,7 @@ while keep_going:
     ocam = ncam
     ncam = playerr.pos[0]
 
+
     if not mian_menu.ch_start() == 4:
         mian_menu.render(moused)
     else:
@@ -300,6 +308,8 @@ while keep_going:
             S_fall = False
         else:
             S_fall = True
+        if flor_box.tooch(down.pos):
+            S_fall = False
 
         if timerr1.time()==1:
             dio = 1
@@ -309,8 +319,13 @@ while keep_going:
             if keys[pygame.K_f]:
                 dio = 0
 
-        if p_mode >0 and keys[pygame.K_e]:
+        if p_mode >0 and keys[pygame.K_e]and sit.time()==0:
             p_mode = 0
+            sit.restart()
+
+        elif not interactive_chair.tooch(playerr.pos) and keys[pygame.K_e] and p_mode == 0 and sit.time()==0:
+            p_mode = 1
+            sit.restart()
 
     pygame.display.update()
     timer.tick(60)
