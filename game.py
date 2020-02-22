@@ -99,6 +99,7 @@ class object ():
         for x in range (0, self.pos[4]):
             for y in range (0, self.pos[5]):
                 sc.blit(self.sprite,  (self.pos[0]+(self.pos[2]*x)+self.cam_move[0], self.pos[1]+(self.pos[3]*y)+self.cam_move[1]))
+
 class square (): #просто вспомогательный класс
     def __init__ (self, x, y, xx, yy ,color):
         self.pos = (x, y, xx, yy)
@@ -190,6 +191,7 @@ class material (object):
 class inv_box ():#невидимая коробка
     def __init__(self, x, y, xx, yy):
         self.pos = [x, y, xx, yy]
+        self.cam_move =[0]
     def tooch(self, pos):
         if  pos[1]>self.pos[1]+(self.pos[3]) or pos[0]+pos[2]<self.pos[0] or self.pos[1]>pos[1]+pos[3] or pos[0]>self.pos[0]+(self.pos[2]):
             return True
@@ -222,7 +224,7 @@ class hitbox ():
 
 bg = [(".\\bg\\MENU BG.png"), (".\\obj\\abr\\adr-choose.png"), (".\\obj\\nst\\nst-choose.png")]
 furniture = [(".\\obj\\frnt\\chair home.png"), (".\\obj\\frnt\\tumb home.png"),
-(".\\obj\\frnt\\scaf home.png"), (".\\obj\\frnt\\window home.png")]
+(".\\obj\\frnt\\scaf home.png"), (".\\obj\\frnt\\window home.png"), (".\\obj\\frnt\\fridge home.png"), (".\\obj\\frnt\\oven home.png")]
 abr = [(".\\obj\\abr\\adr-sit.png"), (".\\obj\\abr\\adr-front.png"), (".\\obj\\abr\\adr-right1.png"), (".\\obj\\abr\\adr-left1.png")]
 
 #переменные==================================================
@@ -255,20 +257,26 @@ window1 = object(650, 400, 100, 150, 1, 1, furniture[3])
 windowb1 = square(650, 400, 100, 150,(20, 20, 30))
 window2 = object(950, 400, 100, 150, 1, 1, furniture[3])
 windowb2 = square(950, 400, 100, 150,(20, 20, 30))
+frige1 = object(-500, 320, 300, 150, 1, 1, furniture[4])
 chair1 = object(800, 550, 300, 150, 1, 1, furniture[0])
 scaf1 = object(1150, 320, 300, 150, 1, 1, furniture[2])
 tumb1 = object(690, 575, 300, 150, 1, 1, furniture[1])
+oven1 = object(-345, 520, 300, 150, 1, 1, furniture[5])
 flor1 = square(-600, 600, 2320, 980, (116, 124, 130))
 flor2 = square(-600, 800, 2320, 980, (104, 112, 117))
 wall1 = square(200, 0, 1520, 600, (168, 167, 162))
 wall2 = square(200, 0, 1520, 200, (158, 157, 152))
+wall3 = square(-600, 0, 800, 600, (197, 203, 212))
+wall4 = square(-600, 0, 800, 200, (184, 187, 191))
+wall5 = square(175, 0, 50, 700, (184, 187, 191))
 
-flor_box = inv_box(400, 750, 1920, 330)
+flor_box = inv_box(400, 750, 2020, 980)
 
-interactive_chair = inv_box(650, 550, 330, 150)
+interactive_chair = inv_box(650, 700, 330, 50)
 
 room1 = [flor1, flor2, wall1, wall2,
-windowb2, window2,
+wall3, wall4, wall5,windowb2, window2, frige1,
+oven1,
 windowb1, window1, scaf1, tumb1, chair1]
 
 rooms = [room1]
