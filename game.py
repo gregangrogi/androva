@@ -318,14 +318,14 @@ while keep_going:
             win.render(0)
             if keys[pygame.K_f]:
                 dio = 0
+        if  sit.time()==0:
+            if p_mode >0 and keys[pygame.K_e]:
+                p_mode = 0
+                sit.restart()
 
-        if p_mode >0 and keys[pygame.K_e]and sit.time()==0:
-            p_mode = 0
-            sit.restart()
-
-        elif not interactive_chair.tooch(playerr.pos) and keys[pygame.K_e] and p_mode == 0 and sit.time()==0:
-            p_mode = 1
-            sit.restart()
+            elif not interactive_chair.tooch(playerr.pos) and keys[pygame.K_e] and p_mode == 0:
+                p_mode = 1
+                sit.restart()
 
     pygame.display.update()
     timer.tick(60)
