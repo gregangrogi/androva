@@ -13,7 +13,14 @@ def text (tex, rad, color):
     text_rect = text.get_rect().centerx
     return text
 
-sc = pygame.display.set_mode ([1920,1080], pygame.FULLSCREEN)
+# получаем разрешение монитора
+infoObject = pygame.display.Info()
+x_size = infoObject.current_w
+y_size = infoObject.current_h
+
+#sc = pygame.display.set_mode ([1600,900], pygame.FULLSCREEN)
+# делаем окно как монитор
+sc = pygame.display.set_mode ([x_size, y_size], pygame.FULLSCREEN)
 
 sc.blit(text("загрузка", 150, (255,255,255)), (300, 300))
 pygame.display.update()
@@ -123,6 +130,7 @@ class player ():
         self.post = 0
         self.grav = 0
         self.cam_move = [0, 0]
+        self.bp = [x, y]
     def imp(self):
         for x in range (0, len(self.images)):
             self.sprite.append(pygame.image.load(self.images[x]))
@@ -224,8 +232,12 @@ class hitbox ():
 
 bg = [(".\\bg\\MENU BG.png"), (".\\obj\\abr\\adr-choose.png"), (".\\obj\\nst\\nst-choose.png")]
 furniture = [(".\\obj\\frnt\\chair home.png"), (".\\obj\\frnt\\tumb home.png"),
-(".\\obj\\frnt\\scaf home.png"), (".\\obj\\frnt\\window home.png"), (".\\obj\\frnt\\fridge home.png"), (".\\obj\\frnt\\oven home.png")]
-abr = [(".\\obj\\abr\\adr-sit.png"), (".\\obj\\abr\\adr-front.png"), (".\\obj\\abr\\adr-right1.png"), (".\\obj\\abr\\adr-left1.png")]
+(".\\obj\\frnt\\scaf home.png"), (".\\obj\\frnt\\window home.png"), (".\\obj\\frnt\\fridge home.png"),
+ (".\\obj\\frnt\\oven home.png"), (".\\obj\\frnt\\range hood.png")]
+abr = [(".\\obj\\abr\\adr-sit.png"), (".\\obj\\abr\\adr-front.png"),
+ (".\\obj\\abr\\adr-right1.png"), (".\\obj\\abr\\adr-left1.png"),
+  (".\\obj\\abr\\adr right2.png"), (".\\obj\\abr\\adr-left2.png"),
+   (".\\obj\\abr\\adr right3.png"), (".\\obj\\abr\\adr-left3.png")]
 
 #переменные==================================================
 
@@ -262,6 +274,7 @@ chair1 = object(800, 550, 300, 150, 1, 1, furniture[0])
 scaf1 = object(1150, 320, 300, 150, 1, 1, furniture[2])
 tumb1 = object(690, 575, 300, 150, 1, 1, furniture[1])
 oven1 = object(-345, 520, 300, 150, 1, 1, furniture[5])
+fridge1 = object(-345, 340, 300, 150, 1, 1, furniture[6])
 flor1 = square(-600, 600, 2320, 980, (116, 124, 130))
 flor2 = square(-600, 800, 2320, 980, (104, 112, 117))
 wall1 = square(200, 0, 1520, 600, (168, 167, 162))
@@ -276,10 +289,14 @@ interactive_chair = inv_box(650, 700, 330, 50)
 
 room1 = [flor1, flor2, wall1, wall2,
 wall3, wall4, wall5,windowb2, window2, frige1,
-oven1,
+oven1, fridge1,
 windowb1, window1, scaf1, tumb1, chair1]
 
 rooms = [room1]
+print(y_size/2)
+for g in range(0, len(rooms[0])):
+    rooms[0][g].cam(x_size/2, y_size/2)
+playerr.cam(x_size / 2, y_size / 2)
 
 #ГЛАВНЫЙ ЦИКЛ================================================
 
