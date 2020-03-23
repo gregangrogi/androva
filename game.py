@@ -9,7 +9,7 @@ pygame.init()
 def text (tex, rad, color):
     font2 = pygame.font.SysFont("FixEye", rad)
     text = font2.render(tex, True,color)
-    text_rect = text.get_rect()
+    textv_rect = text.get_rect()
     text_rect = text.get_rect().centerx
     return text
 
@@ -145,16 +145,26 @@ class player ():
             self.grav+=0.4
             self.keys = pygame.key.get_pressed()
             if self.keys [pygame.K_a]:
-                self.pos[0] += 4
-                self.forcam = 4
-                self.forward=0
-                self.post = 3
-                sc.blit(self.sprite[3],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
-            elif self.keys [pygame.K_d]:
                 self.pos[0] += -4
                 self.forcam = -4
+                self.forward=0
+                self.post = 3
+                if int(self.anim_co / 15) == 1 or int(self.anim_co / 15) == 3:
+                    sc.blit(self.sprite[3],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
+                elif self.anim_co / 15 == 2:
+                    sc.blit(self.sprite[5],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
+                else:
+                    sc.blit(self.sprite[7],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
+            elif self.keys [pygame.K_d]:
+                self.pos[0] += 4
+                self.forcam = 4
                 self.post = 2
-                sc.blit(self.sprite[2],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
+                if int(self.anim_co / 15) == 1 or int(self.anim_co / 15) == 3:
+                    sc.blit(self.sprite[2],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
+                elif self.anim_co / 15 == 2:
+                    sc.blit(self.sprite[4],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
+                else:
+                    sc.blit(self.sprite[6],  (self.pos[0]+self.cam_move [0], self.pos[1]+self.cam_move [1]))
             else:
                 self.forcam = 0
                 if self.forward:
@@ -199,12 +209,15 @@ class material (object):
 class inv_box ():#невидимая коробка
     def __init__(self, x, y, xx, yy):
         self.pos = [x, y, xx, yy]
-        self.cam_move =[0]
+        self.cam_move =[0, 0]
     def tooch(self, pos):
         if  pos[1]>self.pos[1]+(self.pos[3]) or pos[0]+pos[2]<self.pos[0] or self.pos[1]>pos[1]+pos[3] or pos[0]>self.pos[0]+(self.pos[2]):
             return True
         else:
             return False
+    def cam (self, xm, ym):
+        self.pos[0] += xm
+        self.pos[1] += ym
 
 class trimer ():#при timer не работало
     def __init__ (self, long):
@@ -228,6 +241,32 @@ class hitbox ():
     def position(self):
         return self.pos
 
+class inventory():
+    def __init__(self, size, items):
+        self.size = size
+        self.inv = []
+        self.unimp = items
+        self.sprite =  []
+        self.added = False
+        for v in range(0, self.size):
+            self.inv.append(0)
+
+    def imp (self):
+        for x in range (0, len(self.unimp)):
+            self.sprite.append(pygame.image.load(self.unimp[x]))
+
+    def render (self):
+        for g in range(0, self.size):
+            pygame.draw.rect(sc, (173, 199, 195), (200+g*100, 114, 80, 80))
+            sc.blit(self.sprite[self.inv[g]],  (200+g*100, 114))
+    def add (self, adding):
+        if min(self.inv)< 1:
+            for f in range(0, self.size):
+                if self.inv[f] == 0 and self.added == False:
+                    self.inv[f] = adding
+                    self.added = True
+            self.added = False
+
 #изображеня==================================================
 
 bg = [(".\\bg\\MENU BG.png"), (".\\obj\\abr\\adr-choose.png"), (".\\obj\\nst\\nst-choose.png")]
@@ -236,8 +275,9 @@ furniture = [(".\\obj\\frnt\\chair home.png"), (".\\obj\\frnt\\tumb home.png"),
  (".\\obj\\frnt\\oven home.png"), (".\\obj\\frnt\\range hood.png")]
 abr = [(".\\obj\\abr\\adr-sit.png"), (".\\obj\\abr\\adr-front.png"),
  (".\\obj\\abr\\adr-right1.png"), (".\\obj\\abr\\adr-left1.png"),
-  (".\\obj\\abr\\adr right2.png"), (".\\obj\\abr\\adr-left2.png"),
-   (".\\obj\\abr\\adr right3.png"), (".\\obj\\abr\\adr-left3.png")]
+ (".\\obj\\abr\\adr right2.png"), (".\\obj\\abr\\adr-left2.png"),
+ (".\\obj\\abr\\adr right3.png"), (".\\obj\\abr\\adr-left3.png")]
+items = [".\\obj\\none.png",".\\items\\food\\sosige-1.png"]
 
 #переменные==================================================
 
@@ -260,9 +300,13 @@ win = dialogue(textes)
 timerr1 = trimer(0.1)#здесь должно быть 2 но для отладки сделал меньше
 sit = trimer(1)
 down = hitbox(850, 650, 113, 100)
+my = inventory(5, items)
+my.imp()
 S_fall = False
 ocam = 0
 ncam = 850
+de = False
+crutch1 = 1
 
     #1 комната================================================
 window1 = object(650, 400, 100, 150, 1, 1, furniture[3])
@@ -283,9 +327,14 @@ wall3 = square(-600, 0, 800, 600, (197, 203, 212))
 wall4 = square(-600, 0, 800, 200, (184, 187, 191))
 wall5 = square(175, 0, 50, 700, (184, 187, 191))
 
-flor_box = inv_box(400, 750, 2020, 980)
 
+flor_box = inv_box(-4800, 750, 20200, 980)
 interactive_chair = inv_box(650, 700, 330, 50)
+fridgei = inv_box(-1900, 340, 300, 150)
+
+interr1 = [interactive_chair, fridgei, flor_box]
+
+interactives = [interr1]
 
 room1 = [flor1, flor2, wall1, wall2,
 wall3, wall4, wall5,windowb2, window2, frige1,
@@ -293,10 +342,6 @@ oven1, fridge1,
 windowb1, window1, scaf1, tumb1, chair1]
 
 rooms = [room1]
-print(y_size/2)
-for g in range(0, len(rooms[0])):
-    rooms[0][g].cam(x_size/2, y_size/2)
-playerr.cam(x_size / 2, y_size / 2)
 
 #ГЛАВНЫЙ ЦИКЛ================================================
 
@@ -304,10 +349,17 @@ while keep_going:
     for event in pygame.event.get():
         if event.type == pygame.QUIT :
             keep_going = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             moused = True
-        if event.type == pygame.MOUSEBUTTONUP:
+        elif event.type == pygame.MOUSEBUTTONUP:
             moused = False
+        if event.type == pygame.KEYUP:
+            crutch1 = 1
+        if event.type == pygame.KEYDOWN and crutch1 == 1 and event.key == pygame.K_e:
+            crutch1 = 0
+            de = True
+        else:
+            de = False
 
     keys = pygame.key.get_pressed()
 
@@ -323,9 +375,15 @@ while keep_going:
             rooms[0][g].render()
         playerr.render(p_mode, S_fall)
 
-        for g in range(0, len(rooms[0])):
-            rooms[0][g].cam(playerr.forcam, 0)
-        playerr.cam(-(playerr.forcam), 0)
+        if playerr.cam_move[0] > -850:
+            for g in range(0, len(rooms[0])):
+                rooms[0][g].cam(-(playerr.forcam), 0)
+            for g in range(0, len(interactives[0])):
+                interactives[0][g].cam(-(playerr.forcam), 0)
+            playerr.cam(-(playerr.forcam), 0)
+        else :
+            #playerr.cam(-(playerr.forcam), 0)
+            print(playerr.cam_move[0])
 
         down.move(playerr.pos[0], playerr.pos[1]+200)
 
@@ -348,9 +406,14 @@ while keep_going:
                 p_mode = 0
                 sit.restart()
 
-            elif not interactive_chair.tooch(playerr.pos) and keys[pygame.K_e] and p_mode == 0:
-                p_mode = 1
-                sit.restart()
+
+            elif de and p_mode == 0:
+                if not interactive_chair.tooch(playerr.pos):
+                    p_mode = 1
+                    sit.restart()
+                elif not fridgei.tooch(playerr.pos):
+                    my.add(1)
+        my.render()
 
     pygame.display.update()
     timer.tick(60)
