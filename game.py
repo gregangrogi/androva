@@ -272,7 +272,7 @@ class inventory():
 bg = [(".\\bg\\MENU BG.png"), (".\\obj\\abr\\adr-choose.png"), (".\\obj\\nst\\nst-choose.png")]
 furniture = [(".\\obj\\frnt\\chair home.png"), (".\\obj\\frnt\\tumb home.png"),
 (".\\obj\\frnt\\scaf home.png"), (".\\obj\\frnt\\window home.png"), (".\\obj\\frnt\\fridge home.png"),
- (".\\obj\\frnt\\oven home.png"), (".\\obj\\frnt\\range hood.png")]
+ (".\\obj\\frnt\\oven home.png"), (".\\obj\\frnt\\range hood.png"), (".\\obj\\frnt\\boots1.png")]
 abr = [(".\\obj\\abr\\adr-sit.png"), (".\\obj\\abr\\adr-front.png"),
  (".\\obj\\abr\\adr-right1.png"), (".\\obj\\abr\\adr-left1.png"),
  (".\\obj\\abr\\adr right2.png"), (".\\obj\\abr\\adr-left2.png"),
@@ -319,13 +319,20 @@ scaf1 = object(1150, 320, 300, 150, 1, 1, furniture[2])
 tumb1 = object(690, 575, 300, 150, 1, 1, furniture[1])
 oven1 = object(-345, 520, 300, 150, 1, 1, furniture[5])
 fridge1 = object(-345, 340, 300, 150, 1, 1, furniture[6])
-flor1 = square(-600, 600, 2320, 980, (116, 124, 130))
-flor2 = square(-600, 800, 2320, 980, (104, 112, 117))
+boots1 = object(1900, 640, 300, 150, 1, 1, furniture[7])
+
+flor1 = square(-600, 600, 3220, 980, (116, 124, 130))
+flor2 = square(-600, 800, 3220, 980, (104, 112, 117))
+
 wall1 = square(200, 0, 1520, 600, (168, 167, 162))
 wall2 = square(200, 0, 1520, 200, (158, 157, 152))
 wall3 = square(-600, 0, 800, 600, (197, 203, 212))
 wall4 = square(-600, 0, 800, 200, (184, 187, 191))
 wall5 = square(175, 0, 50, 700, (184, 187, 191))
+wall6 = square(1720, 0, 900, 600, (158, 112, 77))
+wall7 = square(1720, 0, 900, 200, (128, 96, 73))
+wall8 = square(1695, 0, 50, 700, (158, 157, 152))
+wall9 = square(2920, 0, 50, 700, (128, 96, 73))
 
 
 flor_box = inv_box(-4800, 750, 20200, 980)
@@ -338,14 +345,15 @@ interactives = [interr1]
 
 room1 = [flor1, flor2, wall1, wall2,
 wall3, wall4, wall5,windowb2, window2, frige1,
-oven1, fridge1,
-windowb1, window1, scaf1, tumb1, chair1]
+oven1, fridge1, boots1,
+windowb1, window1, scaf1, tumb1, chair1, wall6, wall7, wall8]
 
 rooms = [room1]
 
 #ГЛАВНЫЙ ЦИКЛ================================================
 
 while keep_going:
+    keys = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == pygame.QUIT :
             keep_going = False
@@ -353,15 +361,16 @@ while keep_going:
             moused = True
         elif event.type == pygame.MOUSEBUTTONUP:
             moused = False
-        if event.type == pygame.KEYUP:
-            crutch1 = 1
-        if event.type == pygame.KEYDOWN and crutch1 == 1 and event.key == pygame.K_e:
-            crutch1 = 0
-            de = True
-        else:
-            de = False
 
-    keys = pygame.key.get_pressed()
+    if keys[pygame.K_e]:
+        crutch1 += 1
+    else:
+        crutch1 = 0
+    if crutch1 == 1:
+        de = True
+    else:
+        de = False
+
 
     ocam = ncam
     ncam = playerr.pos[0]
@@ -375,15 +384,15 @@ while keep_going:
             rooms[0][g].render()
         playerr.render(p_mode, S_fall)
 
-        if playerr.cam_move[0] > -850:
+        if playerr.cam_move[0] > -1050:
             for g in range(0, len(rooms[0])):
                 rooms[0][g].cam(-(playerr.forcam), 0)
             for g in range(0, len(interactives[0])):
                 interactives[0][g].cam(-(playerr.forcam), 0)
             playerr.cam(-(playerr.forcam), 0)
-        else :
+        #else :
             #playerr.cam(-(playerr.forcam), 0)
-            print(playerr.cam_move[0])
+
 
         down.move(playerr.pos[0], playerr.pos[1]+200)
 
@@ -414,6 +423,8 @@ while keep_going:
                 elif not fridgei.tooch(playerr.pos):
                     my.add(1)
         my.render()
+        print (de)
+        sc.blit(text(str(crutch1), 50, (255,255,255)), (875, 500))
 
     pygame.display.update()
     timer.tick(60)
