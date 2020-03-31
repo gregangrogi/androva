@@ -332,23 +332,33 @@ wall5 = square(175, 0, 50, 700, (184, 187, 191))
 wall6 = square(1720, 0, 900, 600, (158, 112, 77))
 wall7 = square(1720, 0, 900, 200, (128, 96, 73))
 wall8 = square(1695, 0, 50, 700, (158, 157, 152))
-wall9 = square(2920, 0, 50, 700, (128, 96, 73))
+dorr1 = square(2900, 0, 50, 700, (128, 96, 73))
 
 
 flor_box = inv_box(-4800, 750, 20200, 980)
 interactive_chair = inv_box(650, 700, 330, 50)
 fridgei = inv_box(-1900, 340, 300, 150)
+dorri1 = inv_box(3600, 0, 30, 2000)
 
-interr1 = [interactive_chair, fridgei, flor_box]
 
-interactives = [interr1]
+interr1 = [interactive_chair, fridgei, flor_box, dorri1]
+
+interr2 = []
+
+interactives = [interr1, interr2]
 
 room1 = [flor1, flor2, wall1, wall2,
 wall3, wall4, wall5,windowb2, window2, frige1,
 oven1, fridge1, boots1,
-windowb1, window1, scaf1, tumb1, chair1, wall6, wall7, wall8]
+windowb1, window1, scaf1, tumb1, chair1, wall6, wall7, wall8, dorr1]
 
-rooms = [room1]
+room2 = []
+
+room_mode = 0
+
+rooms = [room1, room2]
+
+
 
 #ГЛАВНЫЙ ЦИКЛ================================================
 
@@ -380,15 +390,15 @@ while keep_going:
         mian_menu.render(moused)
     else:
         sc.fill((0, 0, 0))
-        for g in range(0, len(rooms[0])):
-            rooms[0][g].render()
+        for g in range(0, len(rooms[room_mode])):
+            rooms[room_mode][g].render()
         playerr.render(p_mode, S_fall)
 
         if playerr.cam_move[0] > -1050:
-            for g in range(0, len(rooms[0])):
-                rooms[0][g].cam(-(playerr.forcam), 0)
-            for g in range(0, len(interactives[0])):
-                interactives[0][g].cam(-(playerr.forcam), 0)
+            for g in range(0, len(rooms[room_mode])):
+                rooms[room_mode][g].cam(-(playerr.forcam), 0)
+            for g in range(0, len(interactives[room_mode])):
+                interactives[room_mode][g].cam(-(playerr.forcam), 0)
             playerr.cam(-(playerr.forcam), 0)
         #else :
             #playerr.cam(-(playerr.forcam), 0)
@@ -422,9 +432,13 @@ while keep_going:
                     sit.restart()
                 elif not fridgei.tooch(playerr.pos):
                     my.add(1)
+                elif not dorri1.tooch(playerr.pos):
+                    room_mode = 1
+                    playerr.cam_move = [0,0]
+                    playerr.pos = [850, 450, 113, 300,]
+
+        sc.blit(text(str(dorri1.tooch(playerr.pos)), 40, (255,255,255)), (480, 765))
         my.render()
-        print (de)
-        sc.blit(text(str(crutch1), 50, (255,255,255)), (875, 500))
 
     pygame.display.update()
     timer.tick(60)
