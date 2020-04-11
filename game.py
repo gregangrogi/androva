@@ -267,12 +267,33 @@ class inventory():
                     self.added = True
             self.added = False
 
+class special_object():
+    def __init__(self, pos, type):
+        self.type = type
+        self.pos = pos
+        self.cam_move = [0,0]
+        if self.type == 1:
+            self.open = 100
+
+    def cam (self, xm, ym):
+        self.cam_move[0] += xm
+        self.cam_move[1] += ym
+
+    def render (self):
+        if self.type ==1:
+            pygame.draw.rect(sc, (128, 130, 118), (self.pos[0]+self.cam_move[0],self.pos[1]+self.cam_move[1], self.open, 300))
+            pygame.draw.rect(sc, (123, 125, 113), (self.pos[0]+self.cam_move[0]-self.open+200,self.pos[1]+self.cam_move[1], self.open, 300))
+
+    def op (self, range):
+        if self.open > 1:
+            self.open -= 2
+
 #изображеня==================================================
 
 bg = [(".\\bg\\MENU BG.png"), (".\\obj\\abr\\adr-choose.png"), (".\\obj\\nst\\nst-choose.png")]
 furniture = [(".\\obj\\frnt\\chair home.png"), (".\\obj\\frnt\\tumb home.png"),
 (".\\obj\\frnt\\scaf home.png"), (".\\obj\\frnt\\window home.png"), (".\\obj\\frnt\\fridge home.png"),
- (".\\obj\\frnt\\oven home.png"), (".\\obj\\frnt\\range hood.png"), (".\\obj\\frnt\\boots1.png")]
+ (".\\obj\\frnt\\oven home.png"), (".\\obj\\frnt\\range hood.png"), (".\\obj\\frnt\\boots1.png"), (".\\obj\\frnt\\button1.png")]
 abr = [(".\\obj\\abr\\adr-sit.png"), (".\\obj\\abr\\adr-front.png"),
  (".\\obj\\abr\\adr-right1.png"), (".\\obj\\abr\\adr-left1.png"),
  (".\\obj\\abr\\adr right2.png"), (".\\obj\\abr\\adr-left2.png"),
@@ -334,31 +355,60 @@ wall7 = square(1720, 0, 900, 200, (128, 96, 73))
 wall8 = square(1695, 0, 50, 700, (158, 157, 152))
 dorr1 = square(2900, 0, 50, 700, (128, 96, 73))
 
-
 flor_box = inv_box(-4800, 750, 20200, 980)
 interactive_chair = inv_box(650, 700, 330, 50)
 fridgei = inv_box(-1900, 340, 300, 150)
 dorri1 = inv_box(3600, 0, 30, 2000)
-
-
-interr1 = [interactive_chair, fridgei, flor_box, dorri1]
-
-interr2 = []
-
-interactives = [interr1, interr2]
 
 room1 = [flor1, flor2, wall1, wall2,
 wall3, wall4, wall5,windowb2, window2, frige1,
 oven1, fridge1, boots1,
 windowb1, window1, scaf1, tumb1, chair1, wall6, wall7, wall8, dorr1]
 
-room2 = []
+interr1 = [interactive_chair, fridgei, flor_box, dorri1]
 
-room_mode = 0
+    #2 комната================================================
 
-rooms = [room1, room2]
+flor3 = square(800, 700, 1000, 980, (153, 134, 112))
+flor4 = square(800, 900, 1000, 980, (130, 117, 101))
+
+wall9 = square(800, 0, 1000, 700, (136, 143, 114))
+wall10 = square(800, 0, 1000, 200, (120, 125, 105))
+wall11 = square(1500, 0, 300, 700, (136, 143, 114))
+lewt2 = square(1350, 400, 200, 300, (117, 107, 86))
+
+button1 = object(1300, 500, 20, 30, 1, 1, furniture[8])
+
+lift = special_object([1350, 400], 1)
+
+buttoni1 = inv_box(1650, 500, 50, 200)
+
+lifti1 = inv_box(1750, 400, 100, 300)
+
+interr2 = [buttoni1, lifti1]
+
+room2 = [flor3, flor4, wall11, wall9, wall10, button1, lewt2, lift]
+
+    #3 комната================================================
+
+flor5 = square(-600, 600, 3220, 980, (96, 104, 110))
+flor6 = square(-600, 800, 3220, 980, (84, 92, 97))
 
 
+interr3 = []
+
+room3 = [flor5, flor6]
+
+room_mode = 1
+
+rooms = [room1, room2, room3]
+
+interactives = [interr1, interr2, interr3]
+
+
+#for g in range(0, len(rooms[0])):
+#    rooms[0][g].cam(-(1920-x_size/0.9), -(1080-y_size/0.9))
+#playerr.cam(-(1920-x_size/0.9), -(1080-y_size/0.9))
 
 #ГЛАВНЫЙ ЦИКЛ================================================
 
@@ -427,17 +477,28 @@ while keep_going:
 
 
             elif de and p_mode == 0:
-                if not interactive_chair.tooch(playerr.pos):
-                    p_mode = 1
-                    sit.restart()
-                elif not fridgei.tooch(playerr.pos):
-                    my.add(1)
-                elif not dorri1.tooch(playerr.pos):
-                    room_mode = 1
-                    playerr.cam_move = [0,0]
-                    playerr.pos = [850, 450, 113, 300,]
+                if room_mode == 0:
+                    if not interactive_chair.tooch(playerr.pos):
+                        p_mode = 1
+                        sit.restart()
+                    elif not fridgei.tooch(playerr.pos):
+                        my.add(1)
+                    elif not dorri1.tooch(playerr.pos):
+                        room_mode = 1
+                        playerr.cam_move = [0,0]
+                        playerr.pos = [850, 450, 113, 300]
+                elif room_mode == 1:
+                    if not lifti1.tooch(playerr.pos)and lift.open<10:
+                        room_mode = 2
 
-        sc.blit(text(str(dorri1.tooch(playerr.pos)), 40, (255,255,255)), (480, 765))
+
+            if keys[pygame.K_e]:
+                if room_mode == 1:
+                    if not buttoni1.tooch(playerr.pos):
+                        lift.op(1)
+
+
+        sc.blit(text(str(buttoni1.tooch(playerr.pos)), 40, (255,255,255)), (1250, 260))
         my.render()
 
     pygame.display.update()
