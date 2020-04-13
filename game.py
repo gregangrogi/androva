@@ -96,7 +96,6 @@ class meu (): #класс назван meu потому что кагда я п�
             elif  self.tooch(1050, 300, 1250, 700) and moused:
                 self.stage = 4
                 self.plr = 2
-            sc.blit(text(str(self.tooch(1050, 300, 1250, 700)), 70, (255,255,255)), (880, 710))
 
     def ch_start (self):
             return self.stage
