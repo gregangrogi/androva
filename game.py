@@ -511,8 +511,6 @@ while keep_going:
                     if not buttoni1.tooch(playerr.pos):
                         lift.op(1)
 
-
-        sc.blit(text(str(buttoni1.tooch(playerr.pos)), 40, (255,255,255)), (1250, 260))
         my.render()
 
     pygame.display.update()
