@@ -33,6 +33,7 @@ class meu (): #класс назван meu потому что кагда я п�
         self.images = images
         self.sprite = []
         self.colors= [(173, 199, 195), (139, 156, 158), (222, 184, 126)]
+        self.plr = 0
 
     def tooch(self, x, y, x1, y1):
         if pygame.mouse.get_pos()[0] > x and pygame.mouse.get_pos()[0] < x1 and pygame.mouse.get_pos()[1]>y and pygame.mouse.get_pos()[1] < y1 :
@@ -91,6 +92,12 @@ class meu (): #класс назван meu потому что кагда я п�
             sc.blit(self.sprite[2],  (1050, 300))
             if self.tooch(650, 300, 850, 700) and moused:
                 self.stage = 4
+                self.plr = 1
+            elif  self.tooch(1050, 300, 1250, 700) and moused:
+                self.stage = 4
+                self.plr = 2
+            sc.blit(text(str(self.tooch(1050, 300, 1250, 700)), 70, (255,255,255)), (880, 710))
+
     def ch_start (self):
             return self.stage
 
@@ -298,6 +305,10 @@ abr = [(".\\obj\\abr\\adr-sit.png"), (".\\obj\\abr\\adr-front.png"),
  (".\\obj\\abr\\adr-right1.png"), (".\\obj\\abr\\adr-left1.png"),
  (".\\obj\\abr\\adr right2.png"), (".\\obj\\abr\\adr-left2.png"),
  (".\\obj\\abr\\adr right3.png"), (".\\obj\\abr\\adr-left3.png")]
+nst = [(".\\obj\\nst\\nst-sit.png"), (".\\obj\\nst\\nst-choosee.png"),
+  (".\\obj\\nst\\nst-right1.png"), (".\\obj\\nst\\nst-left1.png"),
+  (".\\obj\\nst\\nst-right2.png"), (".\\obj\\nst\\nst-left2.png"),
+  (".\\obj\\nst\\nst-right3.png"), (".\\obj\\nst\\nst-left3.png")]
 items = [".\\obj\\none.png",".\\items\\food\\sosige-1.png"]
 
 #переменные==================================================
@@ -316,7 +327,6 @@ dio = 0
 mian_menu = meu(bg)
 mian_menu.imp()
 playerr = player(850, 450, 113, 300, abr)
-playerr.imp()
 win = dialogue(textes)
 timerr1 = trimer(0.1)#здесь должно быть 2 но для отладки сделал меньше
 sit = trimer(1)
@@ -399,7 +409,7 @@ interr3 = []
 
 room3 = [flor5, flor6]
 
-room_mode = 1
+room_mode = 0
 
 rooms = [room1, room2, room3]
 
@@ -438,6 +448,11 @@ while keep_going:
 
     if not mian_menu.ch_start() == 4:
         mian_menu.render(moused)
+        if  mian_menu.plr == 1:
+            playerr = player(850, 450, 113, 300, abr)
+        elif  mian_menu.plr == 2:
+            playerr = player(850, 450, 113, 300, nst)
+        playerr.imp()
     else:
         sc.fill((0, 0, 0))
         for g in range(0, len(rooms[room_mode])):
