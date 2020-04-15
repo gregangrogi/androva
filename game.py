@@ -337,6 +337,7 @@ ocam = 0
 ncam = 850
 de = False
 crutch1 = 1
+vova = False  # поставь тру это если ты вова
 
     #1 комната================================================
 window1 = object(650, 400, 100, 150, 1, 1, furniture[3])
@@ -403,10 +404,11 @@ room2 = [flor3, flor4, wall11, wall9, wall10, button1, lewt2, lift]
 flor5 = square(-600, 600, 3220, 980, (96, 104, 110))
 flor6 = square(-600, 800, 3220, 980, (84, 92, 97))
 
+wall12 = square(-1000, -200, 2000, 800, (97, 85, 77))
 
 interr3 = []
 
-room3 = [flor5, flor6]
+room3 = [flor5, flor6, wall12]
 
 room_mode = 0
 
@@ -415,9 +417,6 @@ rooms = [room1, room2, room3]
 interactives = [interr1, interr2, interr3]
 
 
-#for g in range(0, len(rooms[0])):
-#    rooms[0][g].cam(-(1920-x_size/0.9), -(1080-y_size/0.9))
-#playerr.cam(-(1920-x_size/0.9), -(1080-y_size/0.9))
 
 #ГЛАВНЫЙ ЦИКЛ================================================
 
@@ -452,6 +451,10 @@ while keep_going:
         elif  mian_menu.plr == 2:
             playerr = player(850, 450, 113, 300, nst)
         playerr.imp()
+        if vova :
+            for g in range(0, len(rooms[0])):
+                rooms[0][g].cam(-(1920-x_size/0.9), -(1080-y_size/0.9))
+            playerr.cam(-(1920-x_size/0.9), -(1080-y_size/0.9))
     else:
         sc.fill((0, 0, 0))
         for g in range(0, len(rooms[room_mode])):
@@ -501,9 +504,19 @@ while keep_going:
                         room_mode = 1
                         playerr.cam_move = [0,0]
                         playerr.pos = [850, 450, 113, 300]
+                        if vova :
+                            for g in range(0, len(rooms[0])):
+                                rooms[0][g].cam(-(1920-x_size/0.9), -(1080-y_size/0.9))
+                            playerr.cam(-(1920-x_size/0.9), -(1080-y_size/0.9))
                 elif room_mode == 1:
                     if not lifti1.tooch(playerr.pos)and lift.open<10:
                         room_mode = 2
+                        playerr.cam_move = [0,0]
+                        playerr.pos = [850, 450, 113, 300]
+                        if vova :
+                            for g in range(0, len(rooms[0])):
+                                rooms[0][g].cam(-(1920-x_size/0.9), -(1080-y_size/0.9))
+                            playerr.cam(-(1920-x_size/0.9), -(1080-y_size/0.9))
 
 
             if keys[pygame.K_e]:
